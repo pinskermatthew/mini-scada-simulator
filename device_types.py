@@ -10,7 +10,6 @@ In Ignition:
 
 # Template defines standard tag structure for this device type
 TEMPLATES = {
-
     "pump": {
         "pressure": 30.0,
         "temperature": 70.0,

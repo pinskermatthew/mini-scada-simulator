@@ -30,19 +30,21 @@ python main.py
 
 Once the simulator is running, you can interact with it using the CLI.
 
-| Commands | Description                                                                                                    |
-|----------|----------------------------------------------------------------------------------------------------------------|
-| help     | Displays a list of all available commands and their descriptions.                                              |
-| add      | Creates a new device. Requires an ID and a type ( tank, pump, motor).                                          |
-| list     | Lists all active devices currently registered in the system.                                                   |
-| show     | Displays the current tag values for a device. Requires a device ID.                                            |
-| events   | Displays recent events for a device. Requires a device ID.                                                     |
-| simulate | Manually updates device values for testing purposes. The main simulation loop handles updates automatically.   |
-| exit     | Exits the simulator.                                                                                           |                                                                                     |
+| Commands | Description                                                                                             |
+|----------|---------------------------------------------------------------------------------------------------------|
+| help     | Displays a list of all available commands and their descriptions.                                       |
+| add      | Creates a new device. Requires an ID and a type (`tank`, `pump`, `motor`).                              |
+| list     | Lists all active devices currently registered in the system.                                            |
+| show     | Displays the current tag values for a device. Requires a device ID.                                     |
+| events   | Displays recent events for a device. Requires a device ID.                                              |
+| simulate | Manually updates device values for testing purposes. The simulator automatically updates device values. |
+| exit     | Exits the simulator.                                                                                    |                                                                                     |
 
 To learn more, see [usage examples](#command-examples).
 
 ## Command examples
+
+Use the following examples to learn how to use the simulator.
 
 ### Add a device
 
@@ -57,12 +59,14 @@ add id=tank-01 type=tank
 Display all currently registered devices in the system.
 
 ```bash
-list
+USER: list
 ```
 
 ### Show device tags
 
-Display the current live tag values (for example, level, temperature, status).
+Display the current live tag values (for example: level, temperature, status).
+
+Device tags are defined per device in `device_types.py` in the `TEMPLATES` configuration.
 
 ```bash
 show id=tank-01
@@ -72,13 +76,18 @@ show id=tank-01
 
 Display recent alarm and system events for the specified device.
 
+Alarm thresholds are defined per device type in `device_types.py` in the `ALARMS` configuration. Events are only generated when a value crosses a defined threshold.
+
 ```bash
 events id=tank-01
 ```
 
 ### Simulate
 
-Manually trigger a single update. This is mainly for testing. The background simulation loop normally handles updates automatically.
+Manually trigger a single simulation for a device. This calls the device’s update logic once, updating tag values and evaluating alarms.
+
+This is mainly used for testing and debugging. Normally, the background update process handles continuous updates automatically.
+
 
 ```bash
 simulate id=tank-01
