@@ -8,6 +8,7 @@ The goal of this project is to better understand how SCADA systems operate at a 
 * [Requirements](#requirements)
 * [Commands](#commands)
 * [Command examples](#command-examples)
+* [Features](#features)
 * [About the project](#about-the-project)
 
 ## Get started
@@ -140,7 +141,7 @@ All implementation decisions, understanding, and refinements were made interacti
 | Alarm logic         | Gateway alarm evaluation              |
 | Event store         | Event journal / historian buffer      |
 
-**Device class → PLC / RTU / Asset** - Each `Device` represents a physical piece of industrial equipment, such as a pump, tank, or motor. In real systems, this would correspond to a PLC (Programmable Logic Controller) or RTU (Remote Terminal Unit) responsible for interfacing with hardware and reporting operational state.
+**Device class → PLC / RTU / Asset** - Each device represents a physical piece of industrial equipment, such as a pump, tank, or motor. In real systems, this would correspond to a PLC (Programmable Logic Controller) or RTU (Remote Terminal Unit) responsible for interfacing with hardware and reporting operational state.
 
 **Tags → Process variables** - Tags represent live sensor values such as temperature, pressure, or tank level. These values continuously change and simulate real-time measurements coming from industrial equipment.
 
