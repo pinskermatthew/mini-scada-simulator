@@ -27,3 +27,21 @@ TEMPLATES = {
         "status": "running"
     }
 }
+
+ALARMS = {
+    "tank": {
+        "level": {
+            "high": 90
+        }
+    },
+    "pump": {
+        "pressure": {
+            "low": 10
+        }
+    },
+    "motor": {
+        "temperature": {
+            "high": 100
+        }
+    }
+}

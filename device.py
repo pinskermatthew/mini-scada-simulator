@@ -10,7 +10,7 @@ Each device:
 - Maintains a set of runtime tags (sensor values)
 """
 
-from device_types import TEMPLATES
+from device_types import TEMPLATES, ALARMS
 import copy
 import random
 
@@ -32,3 +32,28 @@ class Device:
         for k in self.tags:
             if isinstance(self.tags[k], (int, float)):
                 self.tags[k] += random.uniform(-1, 1)
+
+        self.check_alarms()
+
+    def check_alarms(self):
+        device_alarms = ALARMS.get(self.device_type, {})
+
+        for tag_name, rules in device_alarms.items():
+            value = self.tags.get(tag_name)
+
+            if value is None:
+                continue
+
+            if "high" in rules and value > rules["high"]:
+                print(
+                    f"ALARM: {self.device_id} "
+                    f"{tag_name} HIGH "
+                    f"({value:.1f} > {rules['high']})"
+                )
+
+            if "low" in rules and value < rules["low"]:
+                print(
+                    f"ALARM: {self.device_id} "
+                    f"{tag_name} LOW "
+                    f"({value:.1f} < {rules['low']})"
+                )
