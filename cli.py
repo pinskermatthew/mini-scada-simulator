@@ -131,7 +131,7 @@ def run_cli():
                     print(e)
 
         # -------------------
-        # SIMULATE ONCE
+        # SIMULATE
         # -------------------
         elif cmd == "simulate":
             args = {}

@@ -15,7 +15,7 @@ The goal of this project is to better understand how SCADA systems operate at a 
 To get started, clone the repository to your computer, then run the `main.py` file.
 
 ```bash
-git clone <your-repo-url>
+git clone <repo-url>
 cd mini-scada-simulator
 python main.py
 ```
@@ -102,7 +102,7 @@ exit
 
 ## Features
 
-- Device models (e.g., pumps, tanks, motors)
+- Device models (for example: pumps, tanks, motors)
 - Simulated sensor data updates over time
 - High/low alarm evaluation logic
 - Centralized event store (SCADA-style event journal)
@@ -117,7 +117,7 @@ This project was built as an iterative learning exercise with the assistance of 
 
 The LLM was used as:
 - A pair-programming and tutoring tool
-- A way to explore SCADA concepts step-by-step
+- A way to explore SCADA concepts
 - A debugging and architecture discussion aid
 
 All implementation decisions, understanding, and refinements were made interactively during the learning process.
@@ -126,7 +126,7 @@ All implementation decisions, understanding, and refinements were made interacti
 
 - Understand SCADA gateway architecture concepts
 - Learn event-driven system design
-- Implement alarm logic (HIGH / LOW conditions)
+- Implement alarm logic (high/low conditions)
 - Practice modular Python design
 - Explore simulation-based system behavior
 
@@ -139,3 +139,19 @@ All implementation decisions, understanding, and refinements were made interacti
 | Simulation loop     | Telemetry updates from field devices  |
 | Alarm logic         | Gateway alarm evaluation              |
 | Event store         | Event journal / historian buffer      |
+
+**Device class → PLC / RTU / Asset** - Each `Device` represents a physical piece of industrial equipment, such as a pump, tank, or motor. In real systems, this would correspond to a PLC (Programmable Logic Controller) or RTU (Remote Terminal Unit) responsible for interfacing with hardware and reporting operational state.
+
+**Tags → Process variables** - Tags represent live sensor values such as temperature, pressure, or tank level. These values continuously change and simulate real-time measurements coming from industrial equipment.
+
+**Simulation loop → Telemetry updates** - The simulation loop mimics real-world telemetry updates from field devices. Instead of physical sensors, values are updated programmatically to simulate changing process conditions over time.
+
+**Alarm logic → Gateway alarm evaluation** - Alarm rules evaluate tag values against defined thresholds (such as high or low limits). In real SCADA systems, this logic runs centrally in the gateway to detect abnormal process conditions.
+
+**Event store → Event journal / historian buffer** - All significant system changes, such as alarms becoming active or clearing, are recorded in an event store. In real industrial systems, this becomes part of an event journal or historian used for auditing and analysis.
+
+The system simulates a basic SCADA data flow:
+
+Device → Tags → Simulation → Alarm Engine → Event Store
+
+This mirrors how industrial control systems process real-time telemetry and generate operational awareness.
