@@ -46,6 +46,7 @@ def run_cli():
               add id=<id> type=<type>     Create a device
               list                        List all devices
               show id=<id>                Show device tags
+              events id=<id>              View events for a device
               simulate id=<id>            Manually update device values once
               exit                        Quit
             """)
@@ -111,6 +112,21 @@ def run_cli():
 
             for k, v in device.tags.items():
                 print(f"{k}: {v}")
+
+        # -------------------
+        # VIEW EVENTS
+        # -------------------
+        elif cmd == "events":
+            device_id = args.get("id")
+
+            device = devices.get(device_id)
+
+            if not device:
+                print("Device not found")
+                continue
+
+            for event in device.events[-10:]:
+                print(event)
 
         # -------------------
         # SIMULATE ONCE

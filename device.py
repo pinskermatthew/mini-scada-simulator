@@ -13,6 +13,7 @@ Each device:
 from device_types import TEMPLATES, ALARMS
 import copy
 import random
+from datetime import datetime
 
 
 class Device:
@@ -25,6 +26,8 @@ class Device:
 
         # IMPORTANT: copy so each device gets its own instance
         self.tags = copy.deepcopy(TEMPLATES.get(device_type, {}))
+        self.alarm_state = {}
+        self.events = []
 
     def simulate(self):
         # Simulates sensor drift similar to real-time telemetry updates
@@ -44,16 +47,60 @@ class Device:
             if value is None:
                 continue
 
-            if "high" in rules and value > rules["high"]:
-                print(
-                    f"ALARM: {self.device_id} "
-                    f"{tag_name} HIGH "
-                    f"({value:.1f} > {rules['high']})"
-                )
+            # HIGH alarm
+            if "high" in rules:
+                alarm_key = f"{tag_name}_high"
+                is_active = value > rules["high"]
+                was_active = self.alarm_state.get(alarm_key, False)
 
-            if "low" in rules and value < rules["low"]:
-                print(
-                    f"ALARM: {self.device_id} "
-                    f"{tag_name} LOW "
-                    f"({value:.1f} < {rules['low']})"
-                )
+                if is_active and not was_active:
+                    self.add_event(
+                        "ALARM_ACTIVE",
+                        tag_name,
+                        value,
+                        f"HIGH > {rules['high']}"
+                    )
+
+                if not is_active and was_active:
+                    self.add_event(
+                        "ALARM_CLEARED",
+                        tag_name,
+                        value,
+                        "Returned to normal"
+                    )
+
+                self.alarm_state[alarm_key] = is_active
+
+            # LOW alarm
+            if "low" in rules:
+                alarm_key = f"{tag_name}_low"
+                is_active = value < rules["low"]
+                was_active = self.alarm_state.get(alarm_key, False)
+
+                if is_active and not was_active:
+                    self.add_event(
+                        "ALARM_ACTIVE",
+                        tag_name,
+                        value,
+                        f"LOW < {rules['low']}"
+                    )
+
+                if not is_active and was_active:
+                    self.add_event(
+                        "ALARM_CLEARED",
+                        tag_name,
+                        value,
+                        "Returned to normal"
+                    )
+
+                self.alarm_state[alarm_key] = is_active
+
+    def add_event(self, event_type, tag, value, message):
+        self.events.append({
+            "timestamp": datetime.utcnow().isoformat(),
+            "device_id": self.device_id,
+            "type": event_type,
+            "tag": tag,
+            "value": value,
+            "message": message
+        })

@@ -28,6 +28,9 @@ TEMPLATES = {
     }
 }
 
+# Alarm thresholds per device type.
+# These are evaluated by Device.check_alarms() at runtime.
+# Logic (>, <, state tracking) is handled in code; this is configuration only.
 ALARMS = {
     "tank": {
         "level": {
