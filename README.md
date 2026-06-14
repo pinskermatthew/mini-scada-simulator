@@ -59,7 +59,7 @@ add id=tank-01 type=tank
 Display all currently registered devices in the system.
 
 ```bash
-USER: list
+list
 ```
 
 ### Show device tags
@@ -87,7 +87,6 @@ events id=tank-01
 Manually trigger a single simulation for a device. This calls the device’s update logic once, updating tag values and evaluating alarms.
 
 This is mainly used for testing and debugging. Normally, the background update process handles continuous updates automatically.
-
 
 ```bash
 simulate id=tank-01
