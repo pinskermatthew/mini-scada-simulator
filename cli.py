@@ -17,6 +17,7 @@ NOT responsible for:
 
 from store import devices
 from device import Device
+from event_store import events
 
 
 def run_cli():
@@ -125,8 +126,9 @@ def run_cli():
                 print("Device not found")
                 continue
 
-            for event in device.events[-10:]:
-                print(event)
+            for e in events[-20:]:
+                if e["device_id"] == device_id:
+                    print(e)
 
         # -------------------
         # SIMULATE ONCE
