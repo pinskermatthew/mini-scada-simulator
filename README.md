@@ -1,12 +1,13 @@
-# Mini SCADA Simulator
+# Mini SCADA simulator
 
-This Python CLI tool simulates a simplified SCADA-style system. It models core industrial concepts such as devices, real-time telemetry updates, alarm detection, and event logging.
+This Python CLI tool simulates a simplified SCADA (Supervisory Control and Data Acquisition) system. It models core industrial concepts such as devices, real-time telemetry updates, alarm detection, and event logging.
 
-The goal of this project is to better understand how SCADA systems operate at a conceptual level—especially how gateways manage tags, evaluate alarm conditions, and generate events in response to changing process data.
+The goal of this project is to better understand how SCADA systems operate at a conceptual level. For example, how gateways manage tags, evaluate alarm conditions, and generate events in response to changing process data.
 
 * [Get started](#get-started)
 * [Requirements](#requirements)
 * [Commands](#commands)
+* [Command examples](#command-examples)
 * [About the project](#about-the-project)
 
 ## Get started
@@ -19,25 +20,77 @@ cd mini-scada-simulator
 python main.py
 ```
 
-> The project uses only Python standard libraries. No external dependencies are required.
-
 ## Requirements
 
 - Python 3.11+
+
+> The project uses only Python standard libraries. No external dependencies are required.
 
 ## Commands
 
 Once the simulator is running, you can interact with it using the CLI.
 
-| Commands                | Description                                                                                                  |
-|-------------------------|--------------------------------------------------------------------------------------------------------------|
-| help                    | Displays a list of all available commands and their descriptions.                                            |
-| add id=<id> type=<type> | Creates a new device in the system with the specified ID and type.                                           |
-| list                    | Lists all active devices registered in the system.                                                           |
-| show id=<id>            | Displays the tag values for the specified device.                                                            |
-| events id=<id>          | Displays recent events for the specified device.                                                             |
-| simulate id=<id>        | Manually updates device values for testing purposes. The main simulation loop handles updates automatically. |
-| exit                    | Exits the simulator.                                                                                         |
+| Commands | Description                                                                                                    |
+|----------|----------------------------------------------------------------------------------------------------------------|
+| help     | Displays a list of all available commands and their descriptions.                                              |
+| add      | Creates a new device. Requires an ID and a type ( tank, pump, motor).                                          |
+| list     | Lists all active devices currently registered in the system.                                                   |
+| show     | Displays the current tag values for a device. Requires a device ID.                                            |
+| events   | Displays recent events for a device. Requires a device ID.                                                     |
+| simulate | Manually updates device values for testing purposes. The main simulation loop handles updates automatically.   |
+| exit     | Exits the simulator.                                                                                           |                                                                                     |
+
+To learn more, see [usage examples](#command-examples).
+
+## Command examples
+
+### Add a device
+
+Create a tank device with default tags and alarm configuration.
+
+```bash
+add id=tank-01 type=tank
+```
+
+### List devices
+
+Display all currently registered devices in the system.
+
+```bash
+list
+```
+
+### Show device tags
+
+Display the current live tag values (for example, level, temperature, status).
+
+```bash
+show id=tank-01
+```
+
+### View events
+
+Display recent alarm and system events for the specified device.
+
+```bash
+events id=tank-01
+```
+
+### Simulate
+
+Manually trigger a single update. This is mainly for testing. The background simulation loop normally handles updates automatically.
+
+```bash
+simulate id=tank-01
+```
+
+### Exit the simulator
+
+Stop the program and exit the CLI.
+
+```bash
+exit
+```
 
 ## Features
 
