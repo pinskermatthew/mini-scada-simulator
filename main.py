@@ -1,13 +1,18 @@
 """
 Mini SCADA Simulator
 
-This project simulates a simplified SCADA gateway similar in concept to
-Inductive Automation's Ignition.
+This project simulates a simplified SCADA system using an MQTT-based architecture.
 
 In a real SCADA system:
-- This process would represent the Gateway runtime
-- It would manage device connections, tag values, and execution logic
+* This process represents a combination of field device simulation and operator interface
+* A separate Gateway process handles telemetry ingestion, alarm evaluation, and event logging
+* MQTT is used as the communication layer between devices and the gateway
 """
+
+# Architecture mapping:
+# main.py    → device simulation + CLI operator interface
+# gateway.py → telemetry processing + alarm engine + event generation
+# MQTT       → message transport layer
 
 import threading
 import time
@@ -16,7 +21,7 @@ from store import devices
 
 
 def simulation_loop():
-    # Simulates a SCADA gateway runtime loop that continuously updates device data
+    # Simulates real-time field device telemetry updates in a SCADA environment
     # at a fixed interval, similar to real-time tag updates in Ignition.
     while True:
         for device in devices.values():

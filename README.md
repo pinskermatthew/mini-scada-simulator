@@ -146,34 +146,58 @@ All implementation decisions, understanding, and refinements were made interacti
 
 ### Goals
 
-* Understand SCADA gateway architecture concepts
-* Learn event-driven system design
-* Implement alarm logic (high/low conditions)
-* Practice modular Python design
-* Explore simulation-based system behavior
+* Understand SCADA gateway architecture concepts and component separation.
+* Learn event-driven system design using MQTT messaging.
+* Implement centralized alarm evaluation (high/low conditions).
+* Practice modular Python design with separated concerns (device, gateway, CLI, store).
+* Explore simulation-based industrial system behavior.
 
 ### Conceptual mapping
 
-| Simulator component | SCADA concept                         |
-|---------------------|---------------------------------------|
-| Device class        | PLC / RTU / Asset                     |
-| Tags                | Process variables                     |
-| Simulation loop     | Telemetry updates from field devices  |
-| Alarm logic         | Gateway alarm evaluation              |
-| Event store         | Event journal / historian buffer      |
+| Simulator component | SCADA concept                    |
+|---------------------|----------------------------------|
+| Device              | PLC / RTU / Field Asset          |
+| Tags                | Process variables                |
+| Simulation loop     | Field telemetry generation       |
+| MQTT                | Communication layer              |
+| Gateway             | Central processing engine        |
+| Alarm logic         | Gateway alarm evaluation         |
+| Event store         | Event journal / historian buffer |
 
-**Device class → PLC / RTU / Asset** - Each device represents a physical piece of industrial equipment, such as a pump, tank, or motor. In real systems, this would correspond to a PLC (Programmable Logic Controller) or RTU (Remote Terminal Unit) responsible for interfacing with hardware and reporting operational state.
+### Component explanations
 
-**Tags → Process variables** - Tags represent live sensor values such as temperature, pressure, or tank level. These values continuously change and simulate real-time measurements coming from industrial equipment.
+**Device → PLC / RTU / Field Asset**  
+Each device simulates a physical industrial asset such as a pump, tank, or motor. In real SCADA systems, this corresponds to PLCs or RTUs that interface with hardware and expose process data.
 
-**Simulation loop → Telemetry updates** - The simulation loop mimics real-world telemetry updates from field devices. Instead of physical sensors, values are updated programmatically to simulate changing process conditions over time.
+**Tags → Process variables**  
+Tags represent live sensor values such as temperature, pressure, or level. These values simulate real-time measurements from industrial equipment.
 
-**Alarm logic → Gateway alarm evaluation** - Alarm rules evaluate tag values against defined thresholds (such as high or low limits). In real SCADA systems, this logic runs centrally in the gateway to detect abnormal process conditions.
+**Simulation loop → Field telemetry generation**  
+The simulation loop generates changing tag values over time, mimicking sensor updates in a physical environment.
 
-**Event store → Event journal / historian buffer** - All significant system changes, such as alarms becoming active or clearing, are recorded in an event store. In real industrial systems, this becomes part of an event journal or historian used for auditing and analysis.
+**MQTT → Communication layer**  
+MQTT provides the messaging backbone between field devices and the SCADA gateway, enabling real-time telemetry transport.
 
-The system simulates a basic SCADA data flow:
+**Gateway → Central processing engine**  
+The gateway receives telemetry, evaluates alarm conditions, and generates events based on system state changes.
 
-Device → MQTT → Gateway → Alarms/Events
+**Alarm logic → Gateway alarm evaluation**  
+Alarm rules compare incoming tag values against configured thresholds to detect abnormal conditions.
 
-This mirrors how industrial control systems process real-time telemetry and generate operational awareness.
+**Event store → Event journal / historian buffer**  
+All significant state changes (alarm activation/clearing) are recorded for auditing and historical analysis.
+
+### System data flow
+
+```mermaid
+flowchart LR
+    Device[Device Simulation] --> MQTT[MQTT Broker]
+
+    MQTT --> Gateway[SCADA Gateway]
+
+    Gateway --> Alarm[Alarm Engine]
+    Alarm --> Events[Event Store]
+
+    Gateway --> CLI[CLI Console]
+    Events --> CLI
+```

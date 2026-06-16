@@ -1,11 +1,15 @@
 """
-Device Store (In-Memory SCADA Tag Registry)
+Device store (In-memory runtime registry)
 
-Acts like a simplified version of a SCADA Gateway tag database.
+Central in-memory registry for active device instances in the simulator.
 
-In Ignition:
-- This resembles the Gateway's live tag memory
-- Stores active device instances during runtime
+In SCADA systems:
+* This loosely represents the Gateway's runtime tag/device context
+* Used to track active assets currently participating in the system
+
+In this simulator:
+* Stores instantiated Device objects during execution
+* Acts as a shared state container between CLI and simulation loop
 """
 
 devices = {}
