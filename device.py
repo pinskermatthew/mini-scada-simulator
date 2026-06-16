@@ -1,109 +1,66 @@
 """
-Device Model (SCADA Asset Simulation)
+Device model (SCADA field asset simulation)
 
-Represents an industrial asset similar to a PLC-connected device
+Represents a simulated industrial asset similar to a PLC-connected device
 in a SCADA system like Ignition.
 
 Each device:
-- Has a unique ID (tag provider key equivalent)
-- Has a device type (pump, tank, motor)
-- Maintains a set of runtime tags (sensor values)
+* Has a unique ID (used as part of MQTT topic structure)
+* Has a device type (pump, tank, motor)
+* Maintains a set of runtime tags (sensor values)
+
+Devices simulate field telemetry and publish updates using MQTT
+to a central gateway for processing.
 """
 
-from device_types import TEMPLATES, ALARMS
+from device_types import TEMPLATES
 import copy
 import random
-from event_store import add_event
+import json
+import paho.mqtt.client as mqtt
+from config import MQTT_BROKER_HOST, MQTT_BROKER_PORT, MQTT_TOPIC_ROOT
 
 
 class Device:
 
-    # Each device instance represents a real-world industrial asset.
-    # In Ignition, this would correspond to a tag structure under a device folder.
+    # Each device instance represents a simulated industrial asset.
+    # In SCADA systems, this would correspond to a PLC/RTU
+    # publishing process data into the gateway.
     def __init__(self, device_id, device_type="pump"):
         self.device_id = device_id
         self.device_type = device_type
 
         # IMPORTANT: copy so each device gets its own instance
         self.tags = copy.deepcopy(TEMPLATES.get(device_type, {}))
-        self.alarm_state = {
-            "level": {
-                "high": False,
-                "low": False
-            }
-        }
-        self.events = []
+
+        # MQTT client used to publish telemetry to the SCADA gateway
+        self.mqtt = mqtt.Client()
+
+        # Connects to shared broker (configured in config.py)
+        self.mqtt.connect(MQTT_BROKER_HOST, MQTT_BROKER_PORT)
+
+        # Starts background network loop for publishing messages
+        # (required for async MQTT communication)
+        self.mqtt.loop_start()
 
     def simulate(self):
-        # Simulates sensor drift similar to real-time telemetry updates
-        # In real systems, this data would come from PLCs via OPC UA or MQTT
+        # Simulates sensor drift similar to real-world process variability
+        # In production systems, this data would come from actual field sensors
+        # using protocols like OPC UA or MQTT
+
         for k in self.tags:
             if isinstance(self.tags[k], (int, float)):
                 self.tags[k] += random.uniform(-1, 1)
 
-        self.check_alarms()
+        # Payload represents telemetry snapshot sent to SCADA gateway
+        payload = {
+            "device_id": self.device_id,
+            "device_type": self.device_type,
+            "tags": self.tags
+        }
 
-    def check_alarms(self):
-        device_alarms = ALARMS.get(self.device_type, {})
+        # MQTT topic structure defines routing for the gateway subscription model
+        topic = f"{MQTT_TOPIC_ROOT}/{self.device_id}/telemetry"
 
-        for tag_name, rules in device_alarms.items():
-            value = self.tags.get(tag_name)
-
-            if value is None:
-                continue
-
-            # Ensure structure exists
-            if tag_name not in self.alarm_state:
-                self.alarm_state[tag_name] = {"high": False, "low": False}
-
-            state = self.alarm_state[tag_name]
-
-            # HIGH alarm
-            if "high" in rules:
-                is_active = value > rules["high"]
-                was_active = state["high"]
-
-                if is_active and not was_active:
-                    add_event(
-                        self.device_id,
-                        "ALARM_ACTIVE",
-                        tag_name,
-                        value,
-                        f"HIGH > {rules['high']}"
-                    )
-
-                if not is_active and was_active:
-                    add_event(
-                        self.device_id,
-                        "ALARM_CLEARED",
-                        tag_name,
-                        value,
-                        "Returned to normal"
-                    )
-
-                state["high"] = is_active
-
-            # LOW alarm
-            if "low" in rules:
-                is_active = value < rules["low"]
-                was_active = state["low"]
-
-                if is_active and not was_active:
-                    add_event(
-                        self.device_id,
-                        "ALARM_ACTIVE",
-                        tag_name,
-                        value,
-                        f"LOW < {rules['low']}"
-                    )
-
-                if not is_active and was_active:
-                    add_event(
-                        self.device_id,
-                        "ALARM_CLEARED",
-                        tag_name,
-                        value,
-                        "Returned to normal"
-                    )
-
-                state["low"] = is_active
+        # Publish telemetry to broker (gateway consumes this data)
+        self.mqtt.publish(topic, json.dumps(payload))

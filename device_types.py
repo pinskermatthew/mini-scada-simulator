@@ -1,14 +1,16 @@
 """
-Device Type Templates
+Device type templates
 
-Represents SCADA-style UDT (User Defined Type) equivalents.
+Defines reusable SCADA-style device configurations, similar to
+User Defined Types (UDTs).
 
-In Ignition:
-- These would correspond to UDT definitions
-- Each type defines a reusable tag structure for assets
+In SCADA systems:
+* UDTs define reusable tag structures for assets
+* Each instance (device) inherits this structure at runtime
 """
 
-# Template defines standard tag structure for this device type
+# Template defines the default runtime tag structure for each device type.
+# These simulate SCADA tag hierarchies (for example, PLC tag folders).
 TEMPLATES = {
     "pump": {
         "pressure": 30.0,
@@ -28,8 +30,8 @@ TEMPLATES = {
 }
 
 # Alarm thresholds per device type.
-# These are evaluated by Device.check_alarms() at runtime.
-# Logic (>, <, state tracking) is handled in code; this is configuration only.
+# These are evaluated by the gateway alarm engine when processing MQTT telemetry.
+# Devices only publish raw values. Alarm logic is centralized in the gateway.
 ALARMS = {
     "tank": {
         "level": {

@@ -1,18 +1,14 @@
 """
-CLI Gateway Console
+SCADA operator console (Simulation Interface)
 
-This module simulates an operator interface similar to:
-- Ignition Gateway scripting console
-- Industrial maintenance terminal tools
+Provides a command-line interface for interacting with the simulated SCADA system,
+including device inspection, event viewing, and manual simulation control.
 
 Responsibilities:
 - Accept user commands
-- Interact with the device registry
-- Trigger simulated tag updates
-
-NOT responsible for:
-- Device logic
-- Data modeling
+- Interact with the shared device registry (store.py)
+- Inspect device state and event history
+- Manually trigger device simulation steps for testing
 """
 
 from store import devices
@@ -118,7 +114,19 @@ def run_cli():
         # VIEW EVENTS
         # -------------------
         elif cmd == "events":
+            args = {}
+
+            for a in command[1:]:
+                if "=" not in a:
+                    continue
+                key, value = a.split("=", 1)
+                args[key] = value
+
             device_id = args.get("id")
+
+            if not device_id:
+                print("Usage: events id=<device_id>")
+                continue
 
             device = devices.get(device_id)
 
