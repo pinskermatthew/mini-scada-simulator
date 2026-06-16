@@ -118,7 +118,19 @@ def run_cli():
         # VIEW EVENTS
         # -------------------
         elif cmd == "events":
+            args = {}
+
+            for a in command[1:]:
+                if "=" not in a:
+                    continue
+                key, value = a.split("=", 1)
+                args[key] = value
+
             device_id = args.get("id")
+
+            if not device_id:
+                print("Usage: events id=<device_id>")
+                continue
 
             device = devices.get(device_id)
 

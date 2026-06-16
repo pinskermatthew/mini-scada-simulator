@@ -10,10 +10,14 @@ Each device:
 - Maintains a set of runtime tags (sensor values)
 """
 
-from device_types import TEMPLATES, ALARMS
+from device_types import TEMPLATES
 import copy
 import random
-from event_store import add_event
+import json
+import paho.mqtt.client as mqtt
+
+BROKER_HOST = "localhost"
+BROKER_PORT = 1883
 
 
 class Device:
@@ -26,13 +30,9 @@ class Device:
 
         # IMPORTANT: copy so each device gets its own instance
         self.tags = copy.deepcopy(TEMPLATES.get(device_type, {}))
-        self.alarm_state = {
-            "level": {
-                "high": False,
-                "low": False
-            }
-        }
-        self.events = []
+        self.mqtt = mqtt.Client()
+        self.mqtt.connect(BROKER_HOST, BROKER_PORT)
+        self.mqtt.loop_start()
 
     def simulate(self):
         # Simulates sensor drift similar to real-time telemetry updates
@@ -41,69 +41,12 @@ class Device:
             if isinstance(self.tags[k], (int, float)):
                 self.tags[k] += random.uniform(-1, 1)
 
-        self.check_alarms()
+        payload = {
+            "device_id": self.device_id,
+            "device_type": self.device_type,
+            "tags": self.tags
+        }
 
-    def check_alarms(self):
-        device_alarms = ALARMS.get(self.device_type, {})
+        topic = f"devices/{self.device_id}/telemetry"
 
-        for tag_name, rules in device_alarms.items():
-            value = self.tags.get(tag_name)
-
-            if value is None:
-                continue
-
-            # Ensure structure exists
-            if tag_name not in self.alarm_state:
-                self.alarm_state[tag_name] = {"high": False, "low": False}
-
-            state = self.alarm_state[tag_name]
-
-            # HIGH alarm
-            if "high" in rules:
-                is_active = value > rules["high"]
-                was_active = state["high"]
-
-                if is_active and not was_active:
-                    add_event(
-                        self.device_id,
-                        "ALARM_ACTIVE",
-                        tag_name,
-                        value,
-                        f"HIGH > {rules['high']}"
-                    )
-
-                if not is_active and was_active:
-                    add_event(
-                        self.device_id,
-                        "ALARM_CLEARED",
-                        tag_name,
-                        value,
-                        "Returned to normal"
-                    )
-
-                state["high"] = is_active
-
-            # LOW alarm
-            if "low" in rules:
-                is_active = value < rules["low"]
-                was_active = state["low"]
-
-                if is_active and not was_active:
-                    add_event(
-                        self.device_id,
-                        "ALARM_ACTIVE",
-                        tag_name,
-                        value,
-                        f"LOW < {rules['low']}"
-                    )
-
-                if not is_active and was_active:
-                    add_event(
-                        self.device_id,
-                        "ALARM_CLEARED",
-                        tag_name,
-                        value,
-                        "Returned to normal"
-                    )
-
-                state["low"] = is_active
+        self.mqtt.publish(topic, json.dumps(payload))

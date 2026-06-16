@@ -1,8 +1,8 @@
 # Mini SCADA simulator
 
-This Python CLI tool simulates a simplified SCADA (Supervisory Control and Data Acquisition) system. It models core industrial concepts such as devices, real-time telemetry updates, alarm detection, and event logging.
+This Python CLI tool simulates a simplified SCADA (Supervisory Control and Data Acquisition) system using an MQTT-based architecture. It models core industrial concepts such as devices, real-time telemetry updates, a central gateway for processing data, alarm detection, and event logging.
 
-The goal of this project is to better understand how SCADA systems operate at a conceptual level. For example, how gateways manage tags, evaluate alarm conditions, and generate events in response to changing process data.
+The goal of this project is to better understand how SCADA systems operate at a conceptual level. For example, how field devices publish telemetry data, how a gateway ingests and processes that data, how alarm conditions are evaluated, and how system events are generated in response to changing process values.
 
 * [Get started](#get-started)
 * [Requirements](#requirements)
@@ -13,19 +13,37 @@ The goal of this project is to better understand how SCADA systems operate at a 
 
 ## Get started
 
-To get started, clone the repository to your computer, then run the `main.py` file.
+To get started, clone the repository and install dependencies. You also need a local MQTT broker (Mosquitto) running before starting the simulator.
 
 ```bash
 git clone <repo-url>
 cd mini-scada-simulator
+
+pip install -r requirements.txt
+```
+
+Start the MQTT broker:
+
+```bash
+mosquitto
+```
+
+Start the gateway:
+
+```bash
+python gateway.py
+```
+
+Run the simulator:
+
+```bash
 python main.py
 ```
 
 ## Requirements
 
-- Python 3.11+
-
-> The project uses only Python standard libraries. No external dependencies are required.
+* Python 3.11+
+* MQTT broker (e.g. Mosquitto) running locally on port 1883
 
 ## Commands
 
@@ -103,12 +121,13 @@ exit
 
 ## Features
 
-- Device models (for example: pumps, tanks, motors)
-- Simulated sensor data updates over time
-- High/low alarm evaluation logic
-- Centralized event store (SCADA-style event journal)
-- CLI-based interface for interacting with the system
-- Real-time simulation loop (threaded execution)
+* Simulated industrial devices (pumps, tanks, motors) producing real-time telemetry.
+* MQTT messaging layer using Mosquitto broker.
+* Gateway that subscribes to telemetry and processes incoming device data.
+* Central alarm engine that evaluates high/low thresholds and tracks state transitions.
+* Event-driven architecture with a gateway-managed event store for alarm and system events.
+* CLI-based interface for interacting with devices and inspecting system state.
+* Continuous threaded simulation loop that mimics real-time industrial behavior.
 
 ## About the project
 
@@ -117,19 +136,19 @@ exit
 This project was built as an iterative learning exercise with the assistance of a large language model (LLM).
 
 The LLM was used as:
-- A pair-programming and tutoring tool
-- A way to explore SCADA concepts
-- A debugging and architecture discussion aid
+* A pair-programming and tutoring tool
+* A way to explore SCADA concepts
+* A debugging and architecture discussion aid
 
 All implementation decisions, understanding, and refinements were made interactively during the learning process.
 
 ### Goals
 
-- Understand SCADA gateway architecture concepts
-- Learn event-driven system design
-- Implement alarm logic (high/low conditions)
-- Practice modular Python design
-- Explore simulation-based system behavior
+* Understand SCADA gateway architecture concepts
+* Learn event-driven system design
+* Implement alarm logic (high/low conditions)
+* Practice modular Python design
+* Explore simulation-based system behavior
 
 ### Conceptual mapping
 
@@ -153,6 +172,6 @@ All implementation decisions, understanding, and refinements were made interacti
 
 The system simulates a basic SCADA data flow:
 
-Device → Tags → Simulation → Alarm Engine → Event Store
+Device → MQTT → Gateway → Alarms/Events
 
 This mirrors how industrial control systems process real-time telemetry and generate operational awareness.
