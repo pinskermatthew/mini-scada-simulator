@@ -189,15 +189,4 @@ All significant state changes (alarm activation/clearing) are recorded for audit
 
 ### System data flow
 
-```mermaid
-flowchart LR
-    Device[Device Simulation] --> MQTT[MQTT Broker]
-
-    MQTT --> Gateway[SCADA Gateway]
-
-    Gateway --> Alarm[Alarm Engine]
-    Alarm --> Events[Event Store]
-
-    Gateway --> CLI[CLI Console]
-    Events --> CLI
-```
+Device → MQTT → Gateway → Alarm Engine → Event Store
