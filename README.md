@@ -13,7 +13,7 @@ The goal of this project is to better understand how SCADA systems operate at a 
 
 ## Get started
 
-To get started, clone the repository and install dependencies. You also need a local MQTT broker (Mosquitto) running before starting the simulator.
+To get started, clone the repository and install dependencies. You also need a local MQTT broker ([Mosquitto](https://mosquitto.org/)) running before starting the simulator.
 
 ```bash
 git clone <repo-url>
@@ -43,7 +43,7 @@ python main.py
 ## Requirements
 
 * Python 3.11+
-* MQTT broker (for example, Mosquitto) running locally on port `1883`
+* MQTT broker (Mosquitto) running locally on port `1883`
 
 ## Commands
 
@@ -52,7 +52,7 @@ Once the simulator is running, you can interact with it using the CLI.
 | Commands | Description                                                                                             |
 |----------|---------------------------------------------------------------------------------------------------------|
 | help     | Displays a list of all available commands and their descriptions.                                       |
-| add      | Creates a new device. Requires an ID and a type (`tank`, `pump`, `motor`).                              |
+| add      | Creates a new device. Requires an ID and a type (`tank`, `pump`, and `motor`).                          |
 | list     | Lists all active devices currently registered in the system.                                            |
 | show     | Displays the current tag values for a device. Requires a device ID.                                     |
 | events   | Displays recent events for a device. Requires a device ID.                                              |
@@ -83,7 +83,7 @@ list
 
 ### Show device tags
 
-Display the current live tag values (for example: level, temperature, status).
+Display the current live tag values (level, temperature, and status).
 
 Device tags are defined per device in `device_types.py` in the `TEMPLATES` configuration. In the running system, these values are continuously updated by the simulator and published using MQTT to the gateway.
 
@@ -123,7 +123,7 @@ exit
 
 ## Features
 
-* Simulated industrial devices (pumps, tanks, motors) producing real-time telemetry.
+* Simulated industrial devices (pumps, tanks, and motors) producing real-time telemetry.
 * MQTT messaging layer using Mosquitto broker.
 * Gateway that subscribes to telemetry and processes incoming device data.
 * Central alarm engine that evaluates high/low thresholds and tracks state transitions.
@@ -149,7 +149,7 @@ All implementation decisions, understanding, and refinements were made interacti
 * Understand SCADA gateway architecture concepts and component separation.
 * Learn event-driven system design using MQTT messaging.
 * Implement centralized alarm evaluation (high/low conditions).
-* Practice modular Python design with separated concerns (device, gateway, CLI, store).
+* Practice modular Python design with separated concerns (device, gateway, CLI, and store).
 * Explore simulation-based industrial system behavior.
 
 ### Conceptual mapping
@@ -164,28 +164,19 @@ All implementation decisions, understanding, and refinements were made interacti
 | Alarm logic         | Gateway alarm evaluation         |
 | Event store         | Event journal / historian buffer |
 
-### Component explanations
+* **Device** - Each device simulates a physical industrial asset such as a pump, tank, or motor. In real SCADA systems, this corresponds to PLCs (Programmable Logic Controller) or RTUs (Remote Terminal Unit) that interface with hardware and expose process data.
 
-**Device → PLC / RTU / Field Asset**  
-Each device simulates a physical industrial asset such as a pump, tank, or motor. In real SCADA systems, this corresponds to PLCs or RTUs that interface with hardware and expose process data.
+* **Tags** - Tags represent live sensor values such as temperature, pressure, or level. These values simulate real-time measurements from industrial equipment.
 
-**Tags → Process variables**  
-Tags represent live sensor values such as temperature, pressure, or level. These values simulate real-time measurements from industrial equipment.
+* **Simulation loop** - The simulation loop generates changing tag values over time, mimicking sensor updates in a physical environment.
 
-**Simulation loop → Field telemetry generation**  
-The simulation loop generates changing tag values over time, mimicking sensor updates in a physical environment.
+* **MQTT** - MQTT provides the messaging backbone between field devices and the SCADA gateway, enabling real-time telemetry transport.
 
-**MQTT → Communication layer**  
-MQTT provides the messaging backbone between field devices and the SCADA gateway, enabling real-time telemetry transport.
+* **Gateway** - The gateway receives telemetry, evaluates alarm conditions, and generates events based on system state changes.
 
-**Gateway → Central processing engine**  
-The gateway receives telemetry, evaluates alarm conditions, and generates events based on system state changes.
+* **Alarm logic** - Alarm rules compare incoming tag values against configured thresholds to detect abnormal conditions.
 
-**Alarm logic → Gateway alarm evaluation**  
-Alarm rules compare incoming tag values against configured thresholds to detect abnormal conditions.
-
-**Event store → Event journal / historian buffer**  
-All significant state changes (alarm activation/clearing) are recorded for auditing and historical analysis.
+* **Event store** - All significant state changes (alarm activation/clearing) are recorded for auditing and historical analysis.
 
 ### System data flow
 
