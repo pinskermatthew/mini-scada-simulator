@@ -1,14 +1,14 @@
 """
-SCADA operator console (Simulation Interface)
+SCADA operator console (Simulation interface)
 
 Provides a command-line interface for interacting with the simulated SCADA system,
 including device inspection, event viewing, and manual simulation control.
 
 Responsibilities:
-- Accept user commands
-- Interact with the shared device registry (store.py)
-- Inspect device state and event history
-- Manually trigger device simulation steps for testing
+* Accept user commands
+* Interact with the shared device registry (store.py)
+* Inspect device state and event history
+* Manually trigger device simulation steps for testing
 """
 
 from store import devices
@@ -17,7 +17,7 @@ from event_store import events
 
 
 def run_cli():
-    print("\nSCADA Gateway Console (type 'help' for commands)\n")
+    print("\nMini SCADA Simulator (type 'help' for commands)\n")
 
     while True:
         command = input("> ").strip().split()
