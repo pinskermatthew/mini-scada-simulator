@@ -1,16 +1,14 @@
 """
 Device model (SCADA field asset simulation)
 
-Represents a simulated industrial asset similar to a PLC-connected device
-in a SCADA system like Ignition.
+Represents a simulated industrial asset similar to a PLC-connected device in a SCADA system.
 
 Each device:
 * Has a unique ID (used as part of MQTT topic structure)
 * Has a device type (pump, tank, motor)
 * Maintains a set of runtime tags (sensor values)
 
-Devices simulate field telemetry and publish updates using MQTT
-to a central gateway for processing.
+Devices simulate field telemetry and publish updates using MQTT to a central gateway for processing.
 """
 
 from device_types import TEMPLATES

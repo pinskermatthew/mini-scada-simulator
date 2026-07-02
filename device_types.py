@@ -1,8 +1,7 @@
 """
 Device type templates
 
-Defines reusable SCADA-style device configurations, similar to
-User Defined Types (UDTs).
+Defines reusable SCADA-style device configurations, similar to User Defined Types (UDTs).
 
 In SCADA systems:
 * UDTs define reusable tag structures for assets
