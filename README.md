@@ -1,19 +1,24 @@
-# Mini SCADA simulator
+# Mini SCADA Simulator
 
-This Python CLI tool simulates a simplified SCADA (Supervisory Control and Data Acquisition) system using an MQTT-based architecture. It models core industrial concepts such as devices, real-time telemetry updates, a central gateway for processing data, alarm detection, and event logging.
+This Python CLI tool simulates a simplified SCADA (Supervisory Control and Data Acquisition) system using an MQTT-based architecture. It models core industrial concepts such as field devices, real-time telemetry, a central gateway for processing data, alarm evaluation, and event logging.
 
-The goal of this project is to better understand how SCADA systems operate at a conceptual level. For example, how field devices publish telemetry data, how a gateway ingests and processes that data, how alarm conditions are evaluated, and how system events are generated in response to changing process values.
+The goal of this project is to better understand how SCADA systems operate at a conceptual level. It demonstrates how field devices publish telemetry, how a gateway ingests and processes that data, how alarm conditions are evaluated, and how events are generated as process values change.
 
-* [Get started](#get-started)
 * [Requirements](#requirements)
+* [Get started](#get-started)
 * [Commands](#commands)
 * [Command examples](#command-examples)
 * [Features](#features)
 * [About the project](#about-the-project)
 
+## Requirements
+
+* Python 3.11+
+* Local MQTT broker (such as [Mosquitto](https://mosquitto.org/)) running on port `1883`
+
 ## Get started
 
-To get started, clone the repository and install dependencies. You also need a local MQTT broker ([Mosquitto](https://mosquitto.org/)) running before starting the simulator.
+Clone the repository and install the Python dependencies.
 
 ```bash
 git clone <repo-url>
@@ -22,28 +27,19 @@ cd mini-scada-simulator
 pip install -r requirements.txt
 ```
 
-Start the MQTT broker:
+Ensure a local MQTT broker (such as Mosquitto) is running on port `1883`.
 
-```bash
-mosquitto
-```
-
-Start the gateway:
+In a separate terminal, start the gateway:
 
 ```bash
 python gateway.py
 ```
 
-Run the simulator:
+In another terminal, start the simulator:
 
 ```bash
 python main.py
 ```
-
-## Requirements
-
-* Python 3.11+
-* MQTT broker (Mosquitto) running locally on port `1883`
 
 ## Commands
 
@@ -52,12 +48,12 @@ Once the simulator is running, you can interact with it using the CLI.
 | Commands | Description                                                                                             |
 |----------|---------------------------------------------------------------------------------------------------------|
 | help     | Displays a list of all available commands and their descriptions.                                       |
-| add      | Creates a new device. Requires an ID and a type (`tank`, `pump`, and `motor`).                          |
-| list     | Lists all active devices currently registered in the system.                                            |
-| show     | Displays the current tag values for a device. Requires a device ID.                                     |
+| add      | Creates a new device. Requires an ID and a type (`tank`, `pump`, or `motor`).                           |
+| list     | Lists all active devices registered in the system.                                                      |
+| show     | Displays the tag values for a device. Requires a device ID.                                             |
 | events   | Displays recent events for a device. Requires a device ID.                                              |
 | simulate | Manually updates device values for testing purposes. The simulator automatically updates device values. |
-| exit     | Exits the simulator.                                                                                    |                                                                                     |
+| exit     | Exits the simulator.                                                                                    |
 
 To learn more, see [usage examples](#command-examples).
 
@@ -75,7 +71,7 @@ add id=tank-01 type=tank
 
 ### List devices
 
-Display all currently registered devices in the system.
+Display all registered devices in the system.
 
 ```bash
 list
@@ -85,7 +81,7 @@ list
 
 Display the current live tag values (level, temperature, and status).
 
-Device tags are defined per device in `device_types.py` in the `TEMPLATES` configuration. In the running system, these values are continuously updated by the simulator and published using MQTT to the gateway.
+Device tags are defined per device in `device_types.py` under `TEMPLATES`.
 
 ```bash
 show id=tank-01
@@ -95,9 +91,7 @@ show id=tank-01
 
 Display recent alarm and system events for the specified device.
 
-Alarm thresholds are defined per device type in `device_types.py` in the `ALARMS` configuration. Events are generated by the gateway when incoming telemetry values cross defined thresholds (for example, high/low alarm activation and clearance).
-
-Events are stored in the in-memory event store and can be viewed through the CLI.
+Alarm thresholds are defined per device type in `device_types.py` under `ALARMS`. Events are generated by the gateway when incoming telemetry values cross defined thresholds (for example, high/low alarm activation and clearance).
 
 ```bash
 events id=tank-01
@@ -105,7 +99,7 @@ events id=tank-01
 
 ### Simulate
 
-Manually trigger a single simulation for a device. This calls the device’s update logic once, updating tag values and evaluating alarms.
+Manually trigger a single simulation for a device. This calls the device's update logic once, updating tag values and evaluating alarms.
 
 This is mainly used for testing and debugging. Normally, the background update process handles continuous updates automatically.
 
