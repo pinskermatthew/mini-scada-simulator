@@ -9,7 +9,8 @@ The goal of this project is to better understand how SCADA systems operate at a 
 * [Commands](#commands)
 * [Command examples](#command-examples)
 * [Features](#features)
-* [About the project](#about-the-project)
+* [Architecture](#architecture)
+* [Learning approach](#learning-approach)
 
 ## Requirements
 
@@ -43,7 +44,7 @@ python main.py
 
 ## Commands
 
-Once the simulator is running, you can interact with it using the CLI.
+Enter all commands in the terminal where the simulator is running (`python main.py`).
 
 | Commands | Description                                                                                             |
 |----------|---------------------------------------------------------------------------------------------------------|
@@ -54,8 +55,6 @@ Once the simulator is running, you can interact with it using the CLI.
 | events   | Displays recent events for a device. Requires a device ID.                                              |
 | simulate | Manually updates device values for testing purposes. The simulator automatically updates device values. |
 | exit     | Exits the simulator.                                                                                    |
-
-To learn more, see [usage examples](#command-examples).
 
 ## Command examples
 
@@ -118,39 +117,24 @@ exit
 ## Features
 
 * Simulated industrial devices (pumps, tanks, and motors) producing real-time telemetry.
-* MQTT messaging layer using Mosquitto broker.
+* MQTT-based messaging layer enabling communication between devices and the gateway.
 * Gateway that subscribes to telemetry and processes incoming device data.
 * Central alarm engine that evaluates high/low thresholds and tracks state transitions.
 * Event-driven architecture with a gateway-managed event store for alarm and system events.
 * CLI-based interface for interacting with devices and inspecting system state.
 * Continuous threaded simulation loop that mimics real-time industrial behavior.
 
-## About the project
+## Architecture
 
-### Learning approach
-
-This project was built as an iterative learning exercise with the assistance of a large language model (LLM).
-
-The LLM was used as:
-* A pair-programming and tutoring tool
-* A way to explore SCADA concepts
-* A debugging and architecture discussion aid
-
-All implementation decisions, understanding, and refinements were made interactively during the learning process.
-
-### Goals
-
-* Understand SCADA gateway architecture concepts and component separation.
-* Learn event-driven system design using MQTT messaging.
-* Implement centralized alarm evaluation (high/low conditions).
-* Practice modular Python design with separated concerns (device, gateway, CLI, and store).
-* Explore simulation-based industrial system behavior.
+This system simulates a simplified SCADA-style architecture using MQTT as the communication layer. It models how field devices generate telemetry, how a central gateway processes incoming data, and how alarms and events are evaluated in response to changing process conditions.
 
 ### Conceptual mapping
 
+The following table maps simulator components to their corresponding SCADA concepts:
+
 | Simulator component | SCADA concept                    |
 |---------------------|----------------------------------|
-| Device              | PLC / RTU / Field Asset          |
+| Device              | PLC / RTU / Field asset          |
 | Tags                | Process variables                |
 | Simulation loop     | Field telemetry generation       |
 | MQTT                | Communication layer              |
@@ -158,20 +142,38 @@ All implementation decisions, understanding, and refinements were made interacti
 | Alarm logic         | Gateway alarm evaluation         |
 | Event store         | Event journal / historian buffer |
 
-* **Device** - Each device simulates a physical industrial asset such as a pump, tank, or motor. In real SCADA systems, this corresponds to PLCs (Programmable Logic Controller) or RTUs (Remote Terminal Unit) that interface with hardware and expose process data.
+### Component breakdown
 
-* **Tags** - Tags represent live sensor values such as temperature, pressure, or level. These values simulate real-time measurements from industrial equipment.
+The following explains each simulator component in more detail and how it behaves within the simulated system:
 
-* **Simulation loop** - The simulation loop generates changing tag values over time, mimicking sensor updates in a physical environment.
+* **Device** - Simulates a PLC (Programmable Logic Controller) / RTU (Remote Terminal Unit) style industrial asset such as a pump, tank, or motor that generates process data.
 
-* **MQTT** - MQTT provides the messaging backbone between field devices and the SCADA gateway, enabling real-time telemetry transport.
+* **Tags** - Represent live process variables such as temperature, pressure, or level. These values simulate real-time sensor readings from field equipment.
 
-* **Gateway** - The gateway receives telemetry, evaluates alarm conditions, and generates events based on system state changes.
+* **Simulation loop** - Continuously updates tag values over time to mimic field telemetry updates from industrial systems.
 
-* **Alarm logic** - Alarm rules compare incoming tag values against configured thresholds to detect abnormal conditions.
+* **MQTT** - Messaging protocol used as the transport layer between devices and the gateway.
 
-* **Event store** - All significant state changes (alarm activation/clearing) are recorded for auditing and historical analysis.
+* **Gateway** - Central processing component that ingests telemetry, evaluates alarm conditions, and generates system events.
+
+* **Alarm logic** - Evaluates incoming tag values against configured thresholds to detect abnormal conditions and state transitions.
+
+* **Event store** - In-memory log of system events (such as alarm activation and clearing) used for inspection and debugging.
 
 ### System data flow
 
+The following diagram shows how telemetry data moves through the system from device generation to event storage:
+
 Device → MQTT → Gateway → Alarm Engine → Event Store
+
+## Learning approach
+
+This project explores the design and behavior of a simplified SCADA-style system through an iterative, hands-on learning process. It was built using a large language model (LLM) as a development and design assistant.
+
+The LLM was used as:
+
+* A pair-programming and learning tool
+* A way to explore SCADA concepts
+* A debugging and design discussion assistant
+
+All implementation decisions and refinements were made interactively during development.
